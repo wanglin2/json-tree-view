@@ -1,0 +1,15 @@
+{
+  "name": "simple-json-tree-view",
+  "version": "1.0.0",
+  "description": "A simple json tree view plugin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "json",
+    "json-tree"
+  ],
+  "author": "wanglin",
+  "license": "MIT"
+}
