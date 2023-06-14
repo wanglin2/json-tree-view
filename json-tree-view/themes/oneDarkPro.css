@@ -1,0 +1,64 @@
+/*整体*/
+.simpleJsonTreeViewContainer_abc123 {
+  background-color: #282c34;
+}
+
+/*大括号*/
+.simpleJsonTreeViewContainer_abc123 .brace {
+  color: #999999;
+}
+
+/*对象整体*/
+.simpleJsonTreeViewContainer_abc123 .object {
+  margin-left: 20px;
+}
+
+/*对象或数组的每一行*/
+.simpleJsonTreeViewContainer_abc123 .row {
+}
+
+/*对象的key*/
+.simpleJsonTreeViewContainer_abc123 .key {
+  color: #e06c75;
+}
+
+/*冒号*/
+.simpleJsonTreeViewContainer_abc123 .colon {
+  color: #999999;
+  margin: 0 5px;
+}
+
+/*逗号*/
+.simpleJsonTreeViewContainer_abc123 .comma {
+  color: #999999;
+}
+
+/*中括号*/
+.simpleJsonTreeViewContainer_abc123 .bracket {
+  color: #999999;
+}
+
+/*数组整体*/
+.simpleJsonTreeViewContainer_abc123 .array {
+  margin-left: 20px;
+}
+
+/*字符串*/
+.simpleJsonTreeViewContainer_abc123 .string {
+  color: #98c379;
+}
+
+/*数字*/
+.simpleJsonTreeViewContainer_abc123 .number {
+  color: #d19a66;
+}
+
+/*布尔值*/
+.simpleJsonTreeViewContainer_abc123 .boolean {
+  color: #56b6c2;
+}
+
+/*null*/
+.simpleJsonTreeViewContainer_abc123 .null {
+  color: #56b6c2;
+}

@@ -1,30 +1,84 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="jsonTreeViewContainer">
+    <div class="jsonTreeViewInputBox">
+      <textarea class="jsonTreeViewInput" v-model="jsonStr"></textarea>
+    </div>
+    <div class="jsonTreeViewOutputBox" ref="output"></div>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
+<script setup>
+import { ref, onMounted, watch } from 'vue'
+import JsonTreeView from 'simple-json-tree-view'
+import 'simple-json-tree-view/themes/default.css'
+// import 'simple-json-tree-view/themes/oneDarkPro.css'
+import testData from './test.json'
+
+const jsonStr = ref(JSON.stringify(testData))
+const output = ref(null)
+let jsonTreeView = null
+
+watch(
+  () => {
+    return jsonStr.value
+  },
+  () => {
+    jsonTreeView.stringify(jsonStr.value)
+  }
+)
+
+onMounted(() => {
+  jsonTreeView = new JsonTreeView({
+    el: output.value,
+    expandBtnPosition: 'default',// left
+    showLine: true,
+    showExpandBtn: true,
+    showHover: true
+  })
+  jsonTreeView.stringify(jsonStr.value)
+})
+</script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+</style>
+
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.jsonTreeViewContainer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+.jsonTreeViewInputBox,
+.jsonTreeViewOutputBox {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+.jsonTreeViewInputBox {
+  border-right: 1px solid #d0d7de;
+}
+
+.jsonTreeViewInput {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  padding: 10px;
+}
+
+.jsonTreeViewOutputBox {
+  padding: 10px;
+  overflow: auto;
 }
 </style>

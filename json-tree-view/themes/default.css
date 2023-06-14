@@ -1,0 +1,117 @@
+/*整体*/
+.simpleJsonTreeViewContainer_abc123 {
+  position: relative;
+  font-size: 16px;
+}
+
+.simpleJsonTreeViewContainer_abc123.addPadding {
+  padding-left: 20px;
+}
+
+/*展开收起按钮*/
+.simpleJsonTreeViewContainer_abc123 .expandBtn {
+}
+
+.simpleJsonTreeViewContainer_abc123 .expand::after,
+.simpleJsonTreeViewContainer_abc123 .unExpand::after {
+  cursor: pointer;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  border: 1px solid #4a5560;
+  border-radius: 50%;
+  text-align: center;
+  margin-right: 2px;
+}
+
+.simpleJsonTreeViewContainer_abc123 .expand.inLeft::after,
+.simpleJsonTreeViewContainer_abc123 .unExpand.inLeft::after {
+  position: absolute;
+  left: 0;
+  transform: translateY(4px);
+}
+
+.simpleJsonTreeViewContainer_abc123 .expand::after {
+  content: '-';
+}
+
+.simpleJsonTreeViewContainer_abc123 .unExpand::after {
+  content: '+';
+}
+
+/*大括号*/
+.simpleJsonTreeViewContainer_abc123 .brace {
+  color: #4a5560;
+}
+
+/*对象整体*/
+.simpleJsonTreeViewContainer_abc123 .object {
+  padding-left: 20px;
+}
+
+.simpleJsonTreeViewContainer_abc123 .object.showLine {
+  border-left: 1px solid #d0d7de;
+}
+
+/*对象或数组的每一行*/
+.simpleJsonTreeViewContainer_abc123 .row {
+}
+.simpleJsonTreeViewContainer_abc123 .row.hover {
+  background-color: #f5f5f5;
+}
+
+/*对象的key*/
+.simpleJsonTreeViewContainer_abc123 .key {
+  color: #92278f;
+}
+
+/*冒号*/
+.simpleJsonTreeViewContainer_abc123 .colon {
+  color: #4a5560;
+  margin: 0 5px;
+}
+
+/*逗号*/
+.simpleJsonTreeViewContainer_abc123 .comma {
+  color: #4a5560;
+}
+
+/*中括号*/
+.simpleJsonTreeViewContainer_abc123 .bracket {
+  color: #4a5560;
+}
+
+/*省略号*/
+.ellipsis {
+  color: #4a5560;
+}
+
+/*数组整体*/
+.simpleJsonTreeViewContainer_abc123 .array {
+  padding-left: 20px;
+}
+
+.simpleJsonTreeViewContainer_abc123 .array.showLine {
+  border-left: 1px solid #d0d7de;
+}
+
+/*字符串*/
+.simpleJsonTreeViewContainer_abc123 .string {
+  color: #3ab54a;
+}
+
+/*数字*/
+.simpleJsonTreeViewContainer_abc123 .number {
+  color: #25aae2;
+}
+
+/*布尔值*/
+.simpleJsonTreeViewContainer_abc123 .boolean {
+  color: #f98280;
+}
+
+/*null*/
+.simpleJsonTreeViewContainer_abc123 .null {
+  color: #f1592a;
+}
