@@ -1,30 +1,8 @@
-const type = obj => {
-  return Object.prototype.toString.call(obj).slice(8, -1).toLowerCase()
-}
-
-const isNoEmptyObjectOrArray = data => {
-  const dataType = type(data)
-  switch (dataType) {
-    case 'object':
-      return Object.keys(data).length > 0
-    case 'array':
-      return data.length > 0
-    default:
-      return false
-  }
-}
-
-// 获取指定类名的第一个祖先节点
-const getFirstAncestorByClassName = (el, className) => {
-  // 向上找到容器元素就停止
-  while (!el.classList.contains('simpleJsonTreeViewContainer_abc123')) {
-    if (el.classList.contains(className)) {
-      return el
-    }
-    el = el.parentNode
-  }
-  return null
-}
+import {
+  type,
+  isNoEmptyObjectOrArray,
+  getFirstAncestorByClassName
+} from './utils'
 
 class JsonTreeView {
   constructor({
@@ -32,25 +10,49 @@ class JsonTreeView {
     expandBtnPosition = 'default',
     showLine = false,
     showExpandBtn = true,
-    showHover = true
+    showHover = true,
+    showRowNum = false
   }) {
     this.el = type(el) === 'string' ? document.querySelector(el) : el
+    if (!el) throw new Error('请提供容器元素')
     this.expandBtnPosition = expandBtnPosition // 展开收起按钮的位置：default（紧贴括号）、left（统一在左侧）
     this.showLine = showLine // 是否显示竖线
     this.showExpandBtn = showExpandBtn // 是否显示展开收起按钮
     this.showHover = showHover // 是否显示鼠标滑入的高亮效果
-    this.wrap = null
-    this.uniqueId = 0
-    this.lastMouseoverEl = null
+    this.showRowNum = showRowNum // 是否显示行数
+    this.wrap = null // 总的容器元素
+    this.rowWrap = null // 渲染行的容器
+    this.treeWrap = null // 渲染json树的容器
+    this.uniqueId = 0 // 唯一的id
+    this.lastMouseoverEl = null // 上一次鼠标滑入的元素
+    this.oneRowHeight = -1 // 一行元素的高度
+    this.lastRenderRows = 0 // 上一次渲染的行数
     this.init()
+    this.bindEvent()
   }
 
+  // 初始化
   init() {
+    // 最外层容器
     this.wrap = document.createElement('div')
-    this.wrap.className = `simpleJsonTreeViewContainer_abc123 ${
+    this.wrap.className = `simpleJsonTreeViewContainer_abc123`
+    // 行号容器
+    if (this.showRowNum) {
+      this.rowWrap = document.createElement('div')
+      this.rowWrap.className = 'rowWrap'
+      this.wrap.appendChild(this.rowWrap)
+    }
+    // 树容器
+    this.treeWrap = document.createElement('div')
+    this.treeWrap.className = `treeWrap  ${
       this.expandBtnPosition === 'left' ? 'addPadding' : ''
     }`
+    this.wrap.appendChild(this.treeWrap)
     this.el.appendChild(this.wrap)
+  }
+
+  // 绑定事件
+  bindEvent() {
     this.onClick = this.onClick.bind(this)
     this.onMouseover = this.onMouseover.bind(this)
     this.onMouseout = this.onMouseout.bind(this)
@@ -61,6 +63,7 @@ class JsonTreeView {
     }
   }
 
+  // 销毁
   destroy() {
     this.wrap.removeEventListener('click', this.onClick)
     if (this.showHover) {
@@ -70,13 +73,18 @@ class JsonTreeView {
     this.el.removeChild(this.wrap)
   }
 
+  // 格式化
   stringify(data) {
     if (typeof data === 'string') {
       data = JSON.parse(data)
     }
-    this.wrap.innerHTML = `<div class="row">${this.stringifyToHtml(data)}</div>`
+    this.treeWrap.innerHTML = `<div class="row">${this.stringifyToHtml(
+      data
+    )}</div>`
+    this.renderRows()
   }
 
+  // 将json转换成html字符串
   stringifyToHtml(data, isAsKeyValue = false, isLast = true) {
     const dataType = type(data)
     let str = ''
@@ -166,6 +174,47 @@ class JsonTreeView {
     return str
   }
 
+  // 渲染行数
+  renderRows() {
+    if (!this.showRowNum) return
+    // 获取树区域元素的实际高度
+    let rect = this.treeWrap.getBoundingClientRect()
+    // 获取每一行的高度
+    let oneRowHeight = this.getOneRowHeight()
+    // 总行数
+    let rowNum = rect.height / oneRowHeight
+    // 如果新行数比上一次渲染的行数多，那么要创建缺少的行数
+    if (rowNum > this.lastRenderRows) {
+      let fragment = document.createDocumentFragment()
+      for (let i = 0; i < rowNum - this.lastRenderRows; i++) {
+        let el = document.createElement('div')
+        el.className = 'rowNum'
+        el.textContent = this.lastRenderRows + i + 1
+        fragment.appendChild(el)
+      }
+      this.rowWrap.appendChild(fragment)
+    } else if (rowNum < this.lastRenderRows) {
+      // 如果新行数比上一次渲染的行数少，那么要删除多余的行数
+      for (let i = 0; i < this.lastRenderRows - rowNum; i++) {
+        let lastChild = this.rowWrap.children[this.rowWrap.children.length - 1]
+        this.rowWrap.removeChild(lastChild)
+      }
+    }
+    this.lastRenderRows = rowNum
+  }
+
+  // 计算一行元素的大小
+  getOneRowHeight() {
+    if (this.oneRowHeight !== -1) return this.oneRowHeight
+    let el = document.createElement('div')
+    el.textContent = 1
+    this.treeWrap.appendChild(el)
+    let rect = el.getBoundingClientRect()
+    this.treeWrap.removeChild(el)
+    return (this.oneRowHeight = rect.height)
+  }
+
+  // 处理点击事件
   onClick(e) {
     let target = e.target
     // 如果点击的是展开收起按钮
@@ -199,20 +248,25 @@ class JsonTreeView {
         el.style.display = 'block'
         ellipsisEl.style.display = 'none'
       }
+      this.renderRows()
     }
   }
 
+  // 处理鼠标滑入事件
   onMouseover(e) {
     this.clearLastHoverEl()
     let el = getFirstAncestorByClassName(e.target, 'row')
+    if (!el) return
     this.lastMouseoverEl = el
     el.classList.add('hover')
   }
 
+  // 处理鼠标滑出事件
   onMouseout() {
     this.clearLastHoverEl()
   }
 
+  // 清除上一次鼠标滑入元素的高亮样式
   clearLastHoverEl() {
     if (this.lastMouseoverEl) {
       this.lastMouseoverEl.classList.remove('hover')

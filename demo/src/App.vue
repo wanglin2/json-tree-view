@@ -17,23 +17,28 @@ import testData from './test.json'
 const jsonStr = ref(JSON.stringify(testData))
 const output = ref(null)
 let jsonTreeView = null
+let timer = null
 
 watch(
   () => {
     return jsonStr.value
   },
   () => {
-    jsonTreeView.stringify(jsonStr.value)
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      jsonTreeView.stringify(jsonStr.value)
+    }, 300)
   }
 )
 
 onMounted(() => {
   jsonTreeView = new JsonTreeView({
     el: output.value,
-    expandBtnPosition: 'default',// left
+    expandBtnPosition: 'default', // left
     showLine: true,
     showExpandBtn: true,
-    showHover: true
+    showHover: true,
+    showRowNum: false
   })
   jsonTreeView.stringify(jsonStr.value)
 })

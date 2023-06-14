@@ -1,10 +1,26 @@
 /*整体*/
 .simpleJsonTreeViewContainer_abc123 {
-  position: relative;
   font-size: 16px;
+  display: flex;
 }
 
-.simpleJsonTreeViewContainer_abc123.addPadding {
+.simpleJsonTreeViewContainer_abc123 .rowWrap {
+  background-color: rgb(250, 250, 250);
+  padding: 0px 8px;
+  border-right: 1px dashed rgb(229, 235, 238);
+  color: rgb(153, 153, 153);
+  margin-right: 5px;
+}
+
+.simpleJsonTreeViewContainer_abc123 .rowWrap .rowNum {
+}
+
+.simpleJsonTreeViewContainer_abc123 .treeWrap {
+  position: relative;
+  height: max-content;
+}
+
+.simpleJsonTreeViewContainer_abc123 .treeWrap.addPadding {
   padding-left: 20px;
 }
 
