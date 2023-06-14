@@ -2,7 +2,6 @@
   "name": "simple-json-tree-view",
   "version": "1.0.0",
   "description": "A simple json tree view plugin",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,5 +10,18 @@
     "json-tree"
   ],
   "author": "wanglin",
-  "license": "MIT"
+  "license": "MIT",
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/SimpleJsonTreeView.umd.cjs",
+  "module": "./dist/SimpleJsonTreeView.js",
+  "exports": {
+    ".": {
+      "import": "./dist/SimpleJsonTreeView.js",
+      "require": "./dist/SimpleJsonTreeView.umd.cjs"
+    },
+    "./*": [
+      "./*"
+    ]
+  }
 }

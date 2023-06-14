@@ -11,7 +11,8 @@ class JsonTreeView {
     showLine = false,
     showExpandBtn = true,
     showHover = true,
-    showRowNum = false
+    showRowNum = false,
+    errorSliceNum = 20
   }) {
     this.el = type(el) === 'string' ? document.querySelector(el) : el
     if (!el) throw new Error('请提供容器元素')
@@ -20,13 +21,16 @@ class JsonTreeView {
     this.showExpandBtn = showExpandBtn // 是否显示展开收起按钮
     this.showHover = showHover // 是否显示鼠标滑入的高亮效果
     this.showRowNum = showRowNum // 是否显示行数
+    this.errorSliceNum = errorSliceNum // 出错位置前后截取的字符串长度
     this.wrap = null // 总的容器元素
     this.rowWrap = null // 渲染行的容器
     this.treeWrap = null // 渲染json树的容器
+    this.errorWrap = null // 错误信息容器
     this.uniqueId = 0 // 唯一的id
     this.lastMouseoverEl = null // 上一次鼠标滑入的元素
     this.oneRowHeight = -1 // 一行元素的高度
     this.lastRenderRows = 0 // 上一次渲染的行数
+    this.hasError = false // 是否出现了错误
     this.init()
     this.bindEvent()
   }
@@ -48,6 +52,9 @@ class JsonTreeView {
       this.expandBtnPosition === 'left' ? 'addPadding' : ''
     }`
     this.wrap.appendChild(this.treeWrap)
+    // 错误信息容器
+    this.errorWrap = document.createElement('div')
+    this.errorWrap.className = 'errorWrap'
     this.el.appendChild(this.wrap)
   }
 
@@ -75,13 +82,47 @@ class JsonTreeView {
 
   // 格式化
   stringify(data) {
-    if (typeof data === 'string') {
-      data = JSON.parse(data)
+    try {
+      if (typeof data === 'string') {
+        if (data.trim()) {
+          data = JSON.parse(data)
+        } else {
+          // 空字符串
+          this.treeWrap.innerHTML = ''
+          return
+        }
+      }
+      // 如果上一次解析出错了，那么需要删除错误信息
+      if (this.hasError) {
+        this.hasError = false
+        this.treeWrap.removeChild(this.errorWrap)
+      }
+      this.treeWrap.innerHTML = `<div class="row">${this.stringifyToHtml(
+        data
+      )}</div>`
+      this.renderRows()
+    } catch (error) {
+      // 解析出错，显示错误信息
+      let str = ``
+      let msg = error.message
+      str += `<div class="errorMsg">${msg}</div>`
+      // 获取出错位置，截取出前后一段
+      let res = msg.match(/position\s+(\d+)/)
+      if (res && res[1]) {
+        let position = Number(res[1])
+        str += `<div class="errorStr">${data.slice(
+          position - this.errorSliceNum,
+          position
+        )}<span class="errorPosition">${data[position]}</span>${data.slice(
+          position + 1,
+          position + this.errorSliceNum
+        )}</div>`
+      }
+      this.hasError = true
+      this.treeWrap.innerHTML = ''
+      this.errorWrap.innerHTML = str
+      this.treeWrap.appendChild(this.errorWrap)
     }
-    this.treeWrap.innerHTML = `<div class="row">${this.stringifyToHtml(
-      data
-    )}</div>`
-    this.renderRows()
   }
 
   // 将json转换成html字符串
@@ -271,6 +312,32 @@ class JsonTreeView {
     if (this.lastMouseoverEl) {
       this.lastMouseoverEl.classList.remove('hover')
     }
+  }
+
+  // 收起所有
+  unExpandAll() {
+    this.handleToggleExpandAll('expand')
+  }
+
+  // 展开所有
+  expandAll() {
+    this.handleToggleExpandAll('unExpand')
+  }
+
+  // 处理展开所有和收起所有
+  handleToggleExpandAll(type) {
+    let walk = el => {
+      if (el.classList.contains('expandBtn') && el.classList.contains(type)) {
+        this.onClick({
+          target: el
+        })
+      }
+      let children = Array.from(el.children)
+      children.forEach(item => {
+        walk(item)
+      })
+    }
+    walk(this.treeWrap)
   }
 }
 

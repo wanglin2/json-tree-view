@@ -1,6 +1,88 @@
 /*整体*/
 .simpleJsonTreeViewContainer_abc123 {
+  font-size: 16px;
+  display: flex;
   background-color: #282c34;
+  padding: 10px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.simpleJsonTreeViewContainer_abc123 * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/*行数容器*/
+.simpleJsonTreeViewContainer_abc123 .rowWrap {
+  background-color: #282c34;
+  padding: 0px 8px;
+  border-right: 1px dashed #404754;
+  color: rgb(153, 153, 153);
+  margin-right: 5px;
+  flex-shrink: 0;
+}
+
+.simpleJsonTreeViewContainer_abc123 .rowWrap .rowNum {
+}
+
+/*树容器*/
+.simpleJsonTreeViewContainer_abc123 .treeWrap {
+  width: 100%;
+  position: relative;
+  height: max-content;
+}
+
+.simpleJsonTreeViewContainer_abc123 .treeWrap.addPadding {
+  padding-left: 20px;
+}
+
+/*错误信息容器*/
+.simpleJsonTreeViewContainer_abc123 .errorWrap {
+}
+
+.simpleJsonTreeViewContainer_abc123 .errorWrap .errorMsg {
+  color: #e72528;
+  margin-bottom: 20px;
+}
+.simpleJsonTreeViewContainer_abc123 .errorWrap .errorStr {
+  background-color: #f3f5f7;
+}
+.simpleJsonTreeViewContainer_abc123 .errorWrap .errorStr .errorPosition {
+  background-color: #f1592a;
+}
+
+/*展开收起按钮*/
+.simpleJsonTreeViewContainer_abc123 .expandBtn {
+}
+
+.simpleJsonTreeViewContainer_abc123 .expand::after,
+.simpleJsonTreeViewContainer_abc123 .unExpand::after {
+  cursor: pointer;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  border: 1px solid #999999;
+  border-radius: 50%;
+  text-align: center;
+  margin-right: 2px;
+}
+
+.simpleJsonTreeViewContainer_abc123 .expand.inLeft::after,
+.simpleJsonTreeViewContainer_abc123 .unExpand.inLeft::after {
+  position: absolute;
+  left: 0;
+  transform: translateY(4px);
+}
+
+.simpleJsonTreeViewContainer_abc123 .expand::after {
+  content: '-';
+}
+
+.simpleJsonTreeViewContainer_abc123 .unExpand::after {
+  content: '+';
 }
 
 /*大括号*/
@@ -10,11 +92,18 @@
 
 /*对象整体*/
 .simpleJsonTreeViewContainer_abc123 .object {
-  margin-left: 20px;
+  padding-left: 20px;
+}
+
+.simpleJsonTreeViewContainer_abc123 .object.showLine {
+  border-left: 1px solid #737984;
 }
 
 /*对象或数组的每一行*/
 .simpleJsonTreeViewContainer_abc123 .row {
+}
+.simpleJsonTreeViewContainer_abc123 .row.hover {
+  background-color: #181a1f;
 }
 
 /*对象的key*/
@@ -38,9 +127,18 @@
   color: #999999;
 }
 
+/*省略号*/
+.ellipsis {
+  color: #999999;
+}
+
 /*数组整体*/
 .simpleJsonTreeViewContainer_abc123 .array {
-  margin-left: 20px;
+  padding-left: 20px;
+}
+
+.simpleJsonTreeViewContainer_abc123 .array.showLine {
+  border-left: 1px solid #737984;
 }
 
 /*字符串*/

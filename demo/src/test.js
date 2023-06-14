@@ -1,3 +1,4 @@
+const data = `
 {
     "string": "街角小林",
     "number": 123,
@@ -72,3 +73,6 @@
         ]
     }
 }
+`
+
+export default data
