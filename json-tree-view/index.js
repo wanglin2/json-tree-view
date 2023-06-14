@@ -3,11 +3,18 @@ import {
   isNoEmptyObjectOrArray,
   getFirstAncestorByClassName
 } from './utils'
+import {
+  WRAP_CLASS_NAME,
+  EXPAND_BTN_POSITION,
+  CLASS_NAMES,
+  ATTRIBUTES,
+  UID_PREFIX
+} from './constants'
 
 class JsonTreeView {
   constructor({
     el,
-    expandBtnPosition = 'default',
+    expandBtnPosition = EXPAND_BTN_POSITION.DEFAULT,
     showLine = false,
     showExpandBtn = true,
     showHover = true,
@@ -39,22 +46,24 @@ class JsonTreeView {
   init() {
     // 最外层容器
     this.wrap = document.createElement('div')
-    this.wrap.className = `simpleJsonTreeViewContainer_abc123`
+    this.wrap.className = WRAP_CLASS_NAME
     // 行号容器
     if (this.showRowNum) {
       this.rowWrap = document.createElement('div')
-      this.rowWrap.className = 'rowWrap'
+      this.rowWrap.className = CLASS_NAMES.ROW_WRAP
       this.wrap.appendChild(this.rowWrap)
     }
     // 树容器
     this.treeWrap = document.createElement('div')
-    this.treeWrap.className = `treeWrap  ${
-      this.expandBtnPosition === 'left' ? 'addPadding' : ''
+    this.treeWrap.className = `${CLASS_NAMES.TREE_WRAP}  ${
+      this.expandBtnPosition === EXPAND_BTN_POSITION.LEFT
+        ? CLASS_NAMES.ADD_PADDING
+        : ''
     }`
     this.wrap.appendChild(this.treeWrap)
     // 错误信息容器
     this.errorWrap = document.createElement('div')
-    this.errorWrap.className = 'errorWrap'
+    this.errorWrap.className = CLASS_NAMES.ERROR_WRAP
     this.el.appendChild(this.wrap)
   }
 
@@ -97,23 +106,25 @@ class JsonTreeView {
         this.hasError = false
         this.treeWrap.removeChild(this.errorWrap)
       }
-      this.treeWrap.innerHTML = `<div class="row">${this.stringifyToHtml(
-        data
-      )}</div>`
+      this.treeWrap.innerHTML = `<div class="${
+        CLASS_NAMES.ROW
+      }">${this.stringifyToHtml(data)}</div>`
       this.renderRows()
     } catch (error) {
       // 解析出错，显示错误信息
       let str = ``
       let msg = error.message
-      str += `<div class="errorMsg">${msg}</div>`
+      str += `<div class="${CLASS_NAMES.ERROR_MSG}">${msg}</div>`
       // 获取出错位置，截取出前后一段
       let res = msg.match(/position\s+(\d+)/)
       if (res && res[1]) {
         let position = Number(res[1])
-        str += `<div class="errorStr">${data.slice(
+        str += `<div class="${CLASS_NAMES.ERROR_STR}">${data.slice(
           position - this.errorSliceNum,
           position
-        )}<span class="errorPosition">${data[position]}</span>${data.slice(
+        )}<span class="${CLASS_NAMES.ERROR_POSITION}">${
+          data[position]
+        }</span>${data.slice(
           position + 1,
           position + this.errorSliceNum
         )}</div>`
@@ -130,11 +141,13 @@ class JsonTreeView {
     const dataType = type(data)
     let str = ''
     let isEmpty = false
-    let id = 'simpleJsonTreeViewId_' + this.uniqueId++
+    let id = UID_PREFIX + this.uniqueId++
     const expandBtnStr = this.showExpandBtn
-      ? `<span class="expandBtn expand ${
-          this.expandBtnPosition === 'left' ? 'inLeft' : ''
-        }" data-id="${id}"></span>`
+      ? `<span class="${CLASS_NAMES.EXPAND_BTN} ${CLASS_NAMES.EXPAND} ${
+          this.expandBtnPosition === EXPAND_BTN_POSITION.LEFT
+            ? CLASS_NAMES.IN_LEFT
+            : ''
+        }" ${ATTRIBUTES.DATA_ID}="${id}"></span>`
       : '' // 展开收起按钮
     switch (dataType) {
       case 'object': // 对象
@@ -143,17 +156,19 @@ class JsonTreeView {
         // 开始的括号
         str +=
           isEmpty || isAsKeyValue
-            ? `<span class="brace">${isEmpty ? '' : expandBtnStr}{</span>`
-            : `<div class="brace">${expandBtnStr}{</div>`
+            ? `<span class="${CLASS_NAMES.BRACE}">${
+                isEmpty ? '' : expandBtnStr
+              }{</span>`
+            : `<div class="${CLASS_NAMES.BRACE}">${expandBtnStr}{</div>`
         if (!isEmpty) {
           // 中间整体
-          str += `<div class="object ${
-            this.showLine ? 'showLine' : ''
-          }" data-fid="${id}">`
+          str += `<div class="${CLASS_NAMES.OBJECT} ${
+            this.showLine ? CLASS_NAMES.SHOW_LINE : ''
+          }" ${ATTRIBUTES.DATA_FID}="${id}">`
           // 中间的每一行
           keys.forEach((key, index) => {
-            str += '<div class="row">'
-            str += `<span class="key">"${key}"</span><span class="colon">:</span>`
+            str += `<div class="${CLASS_NAMES.ROW}">`
+            str += `<span class="${CLASS_NAMES.KEY}">"${key}"</span><span class="${CLASS_NAMES.COLON}">:</span>`
             str += this.stringifyToHtml(
               data[key],
               true,
@@ -161,7 +176,7 @@ class JsonTreeView {
             )
             // 避免非空对象或数组后面逗号重复
             if (index < keys.length - 1 && !isNoEmptyObjectOrArray(data[key])) {
-              str += '<span class="comma">,</span>'
+              str += `<span class="${CLASS_NAMES.COMMA}">,</span>`
             }
             str += '</div>'
           })
@@ -169,9 +184,9 @@ class JsonTreeView {
         }
         // 结束的括号
         str += isEmpty
-          ? '<span class="brace">}</span>'
-          : `<div class="brace">}${
-              isLast ? '' : '<span class="comma">,</span>'
+          ? `<span class="${CLASS_NAMES.BRACE}">}</span>`
+          : `<div class="${CLASS_NAMES.BRACE}">}${
+              isLast ? '' : `<span class="${CLASS_NAMES.COMMA}">,</span>`
             }</div>`
         break
       case 'array': // 数组
@@ -179,20 +194,22 @@ class JsonTreeView {
         // 开始的括号
         str +=
           isEmpty || isAsKeyValue
-            ? `<span class="bracket">${isEmpty ? '' : expandBtnStr}[</span>`
-            : `<div class="bracket">${expandBtnStr}[</div>`
+            ? `<span class="${CLASS_NAMES.BRACKET}">${
+                isEmpty ? '' : expandBtnStr
+              }[</span>`
+            : `<div class="${CLASS_NAMES.BRACKET}">${expandBtnStr}[</div>`
         if (!isEmpty) {
           // 中间整体
-          str += `<div class="array ${
-            this.showLine ? 'showLine' : ''
-          }" data-fid="${id}">`
+          str += `<div class="${CLASS_NAMES.ARRAY} ${
+            this.showLine ? CLASS_NAMES.SHOW_LINE : ''
+          }" ${ATTRIBUTES.DATA_FID}="${id}">`
           // 中间的每一行
           data.forEach((item, index) => {
-            str += '<div class="row">'
+            str += `<div class="${CLASS_NAMES.ROW}">`
             str += this.stringifyToHtml(item, false, index >= data.length - 1)
             // 避免非空对象或数组后面逗号重复
             if (index < data.length - 1 && !isNoEmptyObjectOrArray(item)) {
-              str += '<span class="comma">,</span>'
+              str += `<span class="${CLASS_NAMES.COMMA}">,</span>`
             }
             str += '</div>'
           })
@@ -200,9 +217,9 @@ class JsonTreeView {
         }
         // 结束的括号
         str += isEmpty
-          ? '<span class="bracket">]</span>'
-          : `<div class="bracket">]${
-              isLast ? '' : '<span class="comma">,</span>'
+          ? `<span class="${CLASS_NAMES.BRACKET}">]</span>`
+          : `<div class="${CLASS_NAMES.BRACKET}">]${
+              isLast ? '' : `<span class="${CLASS_NAMES.COMMA}">,</span>`
             }</div>`
         break
       default: // 其他类型
@@ -229,7 +246,7 @@ class JsonTreeView {
       let fragment = document.createDocumentFragment()
       for (let i = 0; i < rowNum - this.lastRenderRows; i++) {
         let el = document.createElement('div')
-        el.className = 'rowNum'
+        el.className = CLASS_NAMES.ROW_NUM
         el.textContent = this.lastRenderRows + i + 1
         fragment.appendChild(el)
       }
@@ -259,33 +276,35 @@ class JsonTreeView {
   onClick(e) {
     let target = e.target
     // 如果点击的是展开收起按钮
-    if (target.classList.contains('expandBtn')) {
+    if (target.classList.contains(CLASS_NAMES.EXPAND_BTN)) {
       // 当前是否是展开状态
-      let isExpand = target.classList.contains('expand')
+      let isExpand = target.classList.contains(CLASS_NAMES.EXPAND)
       // 取出id
-      let id = target.getAttribute('data-id')
+      let id = target.getAttribute(ATTRIBUTES.DATA_ID)
       // 找到对应的元素
-      let el = document.querySelector(`div[data-fid="${id}"]`)
+      let el = document.querySelector(`div[${ATTRIBUTES.DATA_FID}="${id}"]`)
       // 省略号元素
-      let ellipsisEl = document.querySelector(`div[data-eid="${id}"]`)
+      let ellipsisEl = document.querySelector(
+        `div[${ATTRIBUTES.DATA_EID}="${id}"]`
+      )
       if (!ellipsisEl) {
         // 如果不存在，则创建一个
         ellipsisEl = document.createElement('div')
-        ellipsisEl.className = 'ellipsis'
+        ellipsisEl.className = CLASS_NAMES.ELLIPSIS
         ellipsisEl.innerHTML = '···'
-        ellipsisEl.setAttribute('data-eid', id)
+        ellipsisEl.setAttribute(ATTRIBUTES.DATA_EID, id)
         ellipsisEl.style.display = 'none'
         el.parentNode.insertBefore(ellipsisEl, el)
       }
       // 根据当前状态切换展开收起按钮的类名、切换整体元素和省略号元素的显示与否
       if (isExpand) {
-        target.classList.remove('expand')
-        target.classList.add('unExpand')
+        target.classList.remove(CLASS_NAMES.EXPAND)
+        target.classList.add(CLASS_NAMES.UN_EXPAND)
         el.style.display = 'none'
         ellipsisEl.style.display = 'block'
       } else {
-        target.classList.remove('unExpand')
-        target.classList.add('expand')
+        target.classList.remove(CLASS_NAMES.UN_EXPAND)
+        target.classList.add(CLASS_NAMES.EXPAND)
         el.style.display = 'block'
         ellipsisEl.style.display = 'none'
       }
@@ -296,10 +315,10 @@ class JsonTreeView {
   // 处理鼠标滑入事件
   onMouseover(e) {
     this.clearLastHoverEl()
-    let el = getFirstAncestorByClassName(e.target, 'row')
+    let el = getFirstAncestorByClassName(e.target, CLASS_NAMES.ROW)
     if (!el) return
     this.lastMouseoverEl = el
-    el.classList.add('hover')
+    el.classList.add(CLASS_NAMES.HOVER)
   }
 
   // 处理鼠标滑出事件
@@ -310,24 +329,27 @@ class JsonTreeView {
   // 清除上一次鼠标滑入元素的高亮样式
   clearLastHoverEl() {
     if (this.lastMouseoverEl) {
-      this.lastMouseoverEl.classList.remove('hover')
+      this.lastMouseoverEl.classList.remove(CLASS_NAMES.HOVER)
     }
   }
 
   // 收起所有
   unExpandAll() {
-    this.handleToggleExpandAll('expand')
+    this.handleToggleExpandAll(CLASS_NAMES.EXPAND)
   }
 
   // 展开所有
   expandAll() {
-    this.handleToggleExpandAll('unExpand')
+    this.handleToggleExpandAll(CLASS_NAMES.UN_EXPAND)
   }
 
   // 处理展开所有和收起所有
   handleToggleExpandAll(type) {
     let walk = el => {
-      if (el.classList.contains('expandBtn') && el.classList.contains(type)) {
+      if (
+        el.classList.contains(CLASS_NAMES.EXPAND_BTN) &&
+        el.classList.contains(type)
+      ) {
         this.onClick({
           target: el
         })
